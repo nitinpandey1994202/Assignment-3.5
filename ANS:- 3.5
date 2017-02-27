@@ -1,0 +1,104 @@
+QUESTION:-
+1. Explain what is High availability of Namenode
+2. Explain what is check pointing and how it is useful
+3. Explain what is HDFS federation
+4. What are the configuration files that are to be edited for sure while installing a hadoop cluster
+
+ANS:-
+1)The high availbility of name node emphasize that:-
+                 1)There is a pair of NameNodes in an active-standby configuration.
+                 2)In the event of failure of an active NameNode, the standby takes over its duties without a
+                   significant interruption.
+Hadoop 2.0 overcomes the problem by providing support for multiple NameNodes. It introduces Hadoop 2.0 High Availability 
+feature that brings in an extra NameNode to the Hadoop Architecture which is configured for automatic failover.
+
+Architectural Changes:
+1) The NameNodes must use highly-available shared storage to share the edit log. Edit logs are
+read by the StandbyNameNode when it takes the responsibility of the ActiveNameNode.
+2) DataNodes must send block reports to both the NameNodes because of the block mappings.
+3) The secondary NameNode’s role is subsumed by the StandBy NameNode. StandbyNameNode
+takes periodic checkpoints of the active NameNode.
+4)Checkpointing is done by the StandBy NameNode.
+
+The main motive of the Hadoop 2.0 High Availability is to render availability to big data applications by deploying  
+Hadoop NameNodes –
+                       1)One in active configuration 
+                       2)the other is the Standby Node in passive configuration.
+                       
+Hadoop 2.0 High Availability allows users to configure Hadoop clusters for NameNodes so as to eliminate the probability of 
+Single point of failure in a given Hadoop cluster. The Hadoop Configuration capability allows users to build clusters horizontally with several NameNodes 
+which can operat freely through a common data storage pool, thereby, offering better computing scalability when compared to Hadoop 1.0
+
+EXAMPLE OF HIGH AVAILBILITY:-
+Facebook is a fast growing large data organization that has close to 500 million active users who share more than 30 billion pieces of content on the web in the 
+form of blog posts, photos, news stories, links, comments, etc. Approximately people spend 
+700 billion minutes on Facebook per month and this data is said to double semi annually. Facebook uses Hadoop 2.0 High Availability feature to ensure that 
+100 Petabytes of data is online with the use of the special AvatarNode.
+AvatarNode has been contributed by Facebook as open source software to the Hadoop Community, to offer highly available NameNode that has hot failover and failback. 
+AvatarNode is a double node or can be called as two-node cluster that provides a highly available NameNode to the Big Data applications with a manual failover.
+AvatarNode is running heavy production workloads and contributes to improved administration and reliability of Hadoop Clusters at Facebook.
+
+ANS:-
+2) Checkpointing is an essential part of maintaining and persisting filesystem metadata in HDFS. It’s crucial for efficient NameNode 
+recovery and restart, and is an important indicator of overall cluster health. However, checkpointing can also be a source of confusion 
+for operators of Apache Hadoop clusters.
+
+FILE SYSTEM METADATA IN HDFS:-
+This filesystem metadata is stored in two different constructs: the fsimage and the edit log. The fsimage is a file that represents 
+a point-in-time snapshot of the filesystem’s metadata. However, while the fsimage file format is very efficient to read, 
+it’s unsuitable for making small incremental updates like renaming a single file. Thus, rather than writing a new fsimage 
+every time the namespace is modified, the NameNode instead records the modifying operation in the edit log for durability. 
+This way, if the NameNode crashes, it can restore its state by first loading the fsimage then replaying all the operations
+(also called edits or transactions) in the edit log to catch up to the most recent state of the namesystem.
+The edit log comprises a series of files, called edit log segments, that together represent all the namesystem modifications 
+made since the creation of the fsimage.
+
+HOW EXACTLY CHECK POINT LOOKS LIKE OR WORKS-
+                  FS-IMAGE------------->
+                                       ----------------->CHECKPOINTING----------->NEW FSIMAGE
+                   EDITLOG------------->
+CHECK POINTING WITH A STANDBY NAME NODE:-
+The standby NameNode maintains a relatively up-to-date version of the namespace by periodically replaying the new edits 
+written to the shared edits directory by the active NameNode.
+
+CHECK POINTING WITH A SECONDARY NAME NODE:-
+In a non-HA deployment, checkpointing is done on the SecondaryNameNode rather than the standby NameNode. Since there isn’t a shared 
+edits directory or automatic tailing of the edit log, the SecondaryNameNode has to go through a few more steps first to refresh its
+view of the namespace before continuing down the same basic steps.
+
+
+ANS:-
+3)HDFS FEDERATION:-
+HDFS Federation improves the existing HDFS architecture through a clear separation of namespace and storage, enabling generic block 
+storage layer. It enables support for multiple namespaces in the cluster to improve scalability and isolation. Federation also opens 
+up the architecture, expanding the applicability of HDFS cluster to new implementations and use cases.
+
+HDFS has two main layers:
+
+Namespace manages directories, files and blocks. It supports file system operations such as creation, modification, deletion and listing of files and directories.
+Block Storagehas two parts:
+1)Block Management - it maintains the membership of datanodes in the cluster. It supports block-related operations such as creation, 
+deletion, modification and getting location of the blocks. It also takes care of replica placement and replication.
+2)Physical Storage- it stores the blocks and provides read/write access to it.
+
+ :::Let HDFS contain two sub-directories in the root directory.
+/usr
+/share
+1)In the HDFS Federation, there are multiple NameNodes, each storing the metadata and block
+mapping of files and directories contained in particular sub-directories.
+
+2)The list of sub-directories managed by a NameNode is called a namespace volume.
+
+3)Blocks for files belonging to a namespace is called a block pool.
+ 
+ For example, here we can have two namenodes, one for storing the metadata and block
+ mapping for namespace volume /usr and one for /share.
+ 
+ANS:-
+ANS:-Configuration files that are to be edited for sure while installing a   hadoop cluster.
+Core-site.xml
+HDFS-site.xml
+YARN-site.xml
+Xml
+
+
